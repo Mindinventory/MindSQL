@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "mindsql"
+version = "0.1.2"
+description = "Text-2-SQL made easy in just a few lines of python."
+authors = ["Mindinventory <info@mindinventory.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+chromadb = "^0.4.22"
+pandas = "2.2.0"
+plotly = "5.19.0"
+mysql-connector-python = "^8.3.0"
+google-generativeai="0.3.2"
+llama-cpp-python = "0.2.47"
+openai = "^1.12.0"
+sqlparse = "^0.4.4"
+numpy = "^1.26.4"
+sentence-transformers = "^2.3.1"
+psycopg2-binary = "^2.9.9"
+faiss-cpu = "^1.8.0"
+pysqlite3-binary = "^0.5.2.post3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
