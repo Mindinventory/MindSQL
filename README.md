@@ -99,8 +99,8 @@ Thank you for your interest in contributing to our project! We appreciate your s
 
 | GitHub Profile      | Link + Image                                                                                    | Name            |
 |---------------------|-------------------------------------------------------------------------------------------------|-----------------|
-| siddhant-mi         | [![](https://github.com/siddhant-mi.png?size=50)](https://github.com/Aravinda93)                | Siddhant Pandey |
+| siddhant-mi         | [![](https://github.com/siddhant-mi.png?size=50)](https://github.com/siddhant-mi)               | Siddhant Pandey |
 | ishika-mi           | [![](https://github.com/ishika-mi.png?size=50)](https://github.com/ishika-mi)                   | Ishika Shah     |
 | Hasmukhsuthar05     | [![](https://github.com/Hasmukhsuthar05.png?size=50)](https://github.com/Hasmukhsuthar05)       | Hasmukh Suthar  |
 | 	krishna-thakkar-mi | [![](https://github.com/krishna-thakkar-mi.png?size=50)](https://github.com/krishna-thakkar-mi) | Krishna Thakkar |
-| UjjawalKRoy         | [![](https://github.com/UjjawalKRoy.png?size=50)](https://github.com/UjjawalKRoy)               | UjjawalKRoy     |
+| UjjawalKRoy         | [![](https://github.com/UjjawalKRoy.png?size=50)](https://github.com/UjjawalKRoy)               | Ujjawal Roy     |
