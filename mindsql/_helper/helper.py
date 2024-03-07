@@ -64,11 +64,11 @@ def extract_sql(llm_response: str) -> str:
 
     sql_match = re.search(r"```(sql)?\n(.+?)```", llm_response, re.DOTALL)
     if sql_match:
-        return log_and_return(sql_match.group(2))
+        return log_and_return(sql_match.group(2).replace("`", ""))
     elif has_select_and_semicolon(llm_response):
         start_sql = llm_response.find("SELECT")
         end_sql = llm_response.find(";")
-        return log_and_return(llm_response[start_sql:end_sql + 1])
+        return log_and_return(llm_response[start_sql:end_sql + 1].replace("`", ""))
     return llm_response
 
 

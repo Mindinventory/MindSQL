@@ -83,6 +83,6 @@ class OpenAi(MindSQLCore):
         model = self.config.get("model", "gpt-3.5-turbo")
         temperature = kwargs.get("temperature", 0.1)
         max_tokens = kwargs.get("max_tokens", 500)
-        response = self.client.completions.create(model=model, prompt=prompt, max_tokens=max_tokens, stop=None,
+        response = self.client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}], max_tokens=max_tokens, stop=None,
                                                   temperature=temperature)
-        return response.choices[0].text
+        return response.choices[0].message.content

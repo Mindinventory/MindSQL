@@ -241,7 +241,7 @@ class Faiss(MindSQLCore):
         list: A list of IDs representing the similar question-SQL pairs.
         """
         vectors = self.embedding_function.encode([question]).astype('float32')
-        distances, indices = self.ddl_index.search(vectors, kwargs.pop('k', 2))
+        distances, indices = self.sql_index.search(vectors, kwargs.pop('k', 2))
         result = []
         if np.all(indices[0] == -1):
             return result
