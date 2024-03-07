@@ -13,7 +13,7 @@ from .._helper.helper import load_json_to_dict
 from .._utils import prompts, logger
 from .._utils.constants import CONNECTION_ESTABLISH_ERROR_CONSTANT, NO_DATA_FOUND_IN_JSON_CONSTANT, \
     BULK_DATA_SUCCESS_MESSAGE_CONSTANT, SQL_NOT_PROVIDED_CONSTANT, ADD_QUESTION_SQL_MESSAGE_CONSTANT, \
-    ADD_DOCS_MESSAGE_CONSTANT, ADD_DDL_MESSAGE_CONSTANT
+    ADD_DOCS_MESSAGE_CONSTANT, ADD_DDL_MESSAGE_CONSTANT, BULK_FALSE_ERROR
 from .._utils.prompts import DDL_PROMPT, SQL_EXCEPTION_RESPONSE, FEW_SHOT_EXAMPLE, FINAL_RESPONSE_PROMPT, PLOTLY_PROMPT
 
 log = logger.init_loggers("Minds Core")
@@ -525,8 +525,11 @@ class MindSQLCore(ABC):
                 raise Exception(NO_DATA_FOUND_IN_JSON_CONSTANT.format(path))
             log.info(BULK_DATA_SUCCESS_MESSAGE_CONSTANT)
 
+        if path and not bulk:
+            raise ValueError(BULK_FALSE_ERROR)
+
         if question and not sql:
-            raise Exception(SQL_NOT_PROVIDED_CONSTANT)
+            raise ValueError(SQL_NOT_PROVIDED_CONSTANT)
 
         if question and sql:
             log.info(ADD_QUESTION_SQL_MESSAGE_CONSTANT)

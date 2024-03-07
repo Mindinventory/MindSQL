@@ -4,6 +4,16 @@ version = "0.1.2"
 description = "Text-2-SQL made easy in just a few lines of python."
 authors = ["Mindinventory <info@mindinventory.com>"]
 readme = "README.md"
+repository = "https://github.com/Mindinventory/MindSQL"
+homepage = "https://www.mindinventory.com/text-to-sql-mindsql.php"
+license = "GPL-3.0-or-later"
+keywords = ["Text2SQL", "data", "text to sql", "Text-to-SQL", "RAG", "LLM", "NLP"]
+classifiers = [
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
