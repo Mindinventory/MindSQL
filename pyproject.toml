@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mindsql"
-version = "0.1.3"
+version = "0.2.0"
 description = "Text-2-SQL made easy in just a few lines of python."
 authors = ["Mindinventory <info@mindinventory.com>"]
 readme = "README.md"
