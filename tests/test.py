@@ -1,9 +1,9 @@
 import os
-
+from dotenv import load_dotenv
+from mindsql.core import MindSQLCore
 from mindsql.databases import Sqlite
 from mindsql.llms import GoogleGenAi
-from mindsql.vectorstores import chromadb as cd
-from dotenv import load_dotenv
+from mindsql.vectorstores import ChromaDB
 
 load_dotenv()
 
@@ -11,32 +11,32 @@ api_key = os.getenv('API_KEY')
 db_url = os.getenv('DB_URL')
 example_path = os.getenv('EXAMPLE_PATH')
 
+# Set up configuration dictionary
+config = {'api_key': api_key}
 
-class MindsSqliteGeminiChroma(Sqlite, GoogleGenAi, cd.ChromaDB):
-    def __init__(self, config):
-        cd.ChromaDB.__init__(self, config=config)
-        GoogleGenAi.__init__(self, config=config)
-        Sqlite.__init__(self, config=config)
+# Create MindSQLCore instance with configured llm, vectorstore, and database
+minds = MindSQLCore(
+    llm=GoogleGenAi(config=config),
+    vectorstore=ChromaDB(),
+    database=Sqlite()
+)
 
+# Create a database connection using the specified URL
+conn = minds.database.create_connection(url=db_url)
 
-config = {
-    'api_key': api_key
-}
+# Index all Data Definition Language (DDL) statements in the 'main' database into the vectorstore
+minds.index_all_ddls(connection=conn, db_name='main')
 
-msql = MindsSqliteGeminiChroma(config=config)
-conn = msql.create_connection(url=db_url)
-ddls = msql.get_all_ddls(connection=conn, database='main')
+# Index question-sql pair in bulk from the specified example path
+minds.index(bulk=True, path=example_path)
 
-for ind in ddls.index:
-    msql.index_ddl(ddls["DDL"][ind])
+# Ask a question to the database and visualize the result
+response = minds.ask_db(
+    question="Show all products whose unit price is more than 30",
+    connection=conn,
+    visualize=True
+)
 
-items = msql.retrieve_relevant_ddl("Find the average unit price of products")
-
-
-msql.index(bulk=True, path=example_path)
-ques_sqls = msql.retrieve_relevant_question_sql("Find the average unit price of products")
-response = msql.ask_db(question="Show all products whose unit price is more than 30", connection=conn, visualize=True,
-                       table_names=['Product'])
-
+# Extract and display the chart from the response
 chart = response["chart"]
 chart.show()

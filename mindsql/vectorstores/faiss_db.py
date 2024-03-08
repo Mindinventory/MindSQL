@@ -2,17 +2,17 @@ import json
 import os
 import uuid
 
+import faiss
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-import faiss
-from ..core import MindSQLCore
+from . import IVectorstore
 
 sentence_transformer_ef = SentenceTransformer("WhereIsAI/UAE-Large-V1")
 
 
-class Faiss(MindSQLCore):
+class Faiss(IVectorstore):
     def __init__(self, config=None):
         """
         Initialize the FAISS vector store.
@@ -23,7 +23,6 @@ class Faiss(MindSQLCore):
         Returns:
             None
         """
-        super().__init__(config)
         if config is not None:
             directory = config.get("path", ".")
             self.dimension = config.get("dimension", 1024)

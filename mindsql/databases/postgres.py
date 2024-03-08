@@ -5,16 +5,16 @@ import pandas as pd
 import psycopg2
 from psycopg2 import extensions
 
+from . import IDatabase
 from .._utils import logger
 from .._utils.constants import ERROR_CONNECTING_TO_DB_CONSTANT, INVALID_DB_CONNECTION_OBJECT, ERROR_WHILE_RUNNING_QUERY, \
     POSTGRESQL_SHOW_DATABASE_QUERY, POSTGRESQL_DB_TABLES_INFO_SCHEMA_QUERY, \
-    POSTGRESQL_SHOW_CREATE_TABLE_QUERY
-from ..core import MindSQLCore
+    POSTGRESQL_SHOW_CREATE_TABLE_QUERY, CONNECTION_ESTABLISH_ERROR_CONSTANT
 
 log = logger.init_loggers("Postgres")
 
 
-class Postgres(MindSQLCore):
+class Postgres(IDatabase):
     @staticmethod
     def create_connection(url: str, **kwargs) -> any:
         """
@@ -33,13 +33,13 @@ class Postgres(MindSQLCore):
         try:
             parsed_url = urlparse(url)
             connection = psycopg2.connect(user=parsed_url.username, password=parsed_url.password,
-                host=parsed_url.hostname, port=parsed_url.port, database=parsed_url.path.lstrip('/'))
+                                          host=parsed_url.hostname, port=parsed_url.port,
+                                          database=parsed_url.path.lstrip('/'))
             return connection
         except psycopg2.OperationalError as e:
             log.info(ERROR_CONNECTING_TO_DB_CONSTANT.format("PostgreSQL", e))
 
-    @staticmethod
-    def validate_postgresql_connection(connection: any) -> None:
+    def validate_connection(self, connection: any) -> None:
         """
         A function that validates if the provided connection is a PostgreSQL connection.
 
@@ -49,6 +49,8 @@ class Postgres(MindSQLCore):
         Raises:
             ValueError: If the provided connection is not a PostgreSQL connection.
         """
+        if connection is None:
+            raise ValueError(CONNECTION_ESTABLISH_ERROR_CONSTANT)
         if not isinstance(connection, psycopg2.extensions.connection):
             raise ValueError(INVALID_DB_CONNECTION_OBJECT.format("PostgreSQL"))
 
@@ -64,8 +66,7 @@ class Postgres(MindSQLCore):
             pd.DataFrame: A DataFrame containing the results of the SQL query.
         """
         try:
-            self._validate_connection(connection)
-            self.validate_postgresql_connection(connection)
+            self.validate_connection(connection)
             cursor = connection.cursor()
             cursor.execute(sql)
             results = cursor.fetchall()
@@ -76,19 +77,18 @@ class Postgres(MindSQLCore):
         except psycopg2.Error as e:
             log.info(ERROR_WHILE_RUNNING_QUERY.format(e))
 
-    def _get_databases(self, connection) -> List[str]:
+    def get_databases(self, connection) -> List[str]:
         """
         Get a list of databases from the given connection and SQL query.
 
         Parameters:
-            connection (object): The connection object for the database.
+            connection: The connection object for the database.
 
         Returns:
             List[str]: A list of unique database names.
         """
         try:
-            self._validate_connection(connection)
-            self.validate_postgresql_connection(connection)
+            self.validate_connection(connection)
             df_databases = self.execute_sql(connection=connection, sql=POSTGRESQL_SHOW_DATABASE_QUERY)
         except Exception as e:
             log.info(e)
@@ -96,7 +96,7 @@ class Postgres(MindSQLCore):
 
         return df_databases["DATABASE_NAME"].unique().tolist()
 
-    def _get_table_names(self, connection, database: str) -> pd.DataFrame:
+    def get_table_names(self, connection, database: str) -> pd.DataFrame:
         """
         Retrieves the tables from the information schema for the specified database.
 
@@ -107,8 +107,7 @@ class Postgres(MindSQLCore):
         Returns:
             DataFrame: A pandas DataFrame containing the table names from the information schema.
         """
-        self._validate_connection(connection)
-        self.validate_postgresql_connection(connection)
+        self.validate_connection(connection)
         query = POSTGRESQL_DB_TABLES_INFO_SCHEMA_QUERY.format(db=database)
         df_tables = self.execute_sql(connection, query)
         return df_tables
@@ -124,9 +123,8 @@ class Postgres(MindSQLCore):
         Returns:
             DataFrame: A pandas DataFrame containing the DDLs for all the tables in the database.
         """
-        self._validate_connection(connection)
-        self.validate_postgresql_connection(connection)
-        df_tables = self._get_table_names(connection, database)
+        self.validate_connection(connection)
+        df_tables = self.get_table_names(connection, database)
         df_ddl = pd.DataFrame(columns=['Table', 'DDL'])
         for index, row in df_tables.iterrows():
             table_name = row.get('table_name')
@@ -145,8 +143,7 @@ class Postgres(MindSQLCore):
         Returns:
             str: The DDL for the table.
         """
-        self._validate_connection(connection)
-        self.validate_postgresql_connection(connection)
+        self.validate_connection(connection)
         ddl_df = self.execute_sql(connection, POSTGRESQL_SHOW_CREATE_TABLE_QUERY.format(table=table_name))
         return ddl_df.get('create_statement').iloc[0]
 

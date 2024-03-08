@@ -1,10 +1,10 @@
 from llama_cpp import Llama
 
 from .._utils.constants import LLAMA_VALUE_ERROR, LLAMA_PROMPT_EXCEPTION
-from ..core import MindSQLCore
+from .illm import ILlm
 
 
-class LlamaCpp(MindSQLCore):
+class LlamaCpp(ILlm):
     def __init__(self, config=None):
         """
         Initialize the class with an optional config parameter.
@@ -15,7 +15,6 @@ class LlamaCpp(MindSQLCore):
         Returns:
             None
         """
-        super().__init__(config)
         if config is None:
             raise ValueError("")
 

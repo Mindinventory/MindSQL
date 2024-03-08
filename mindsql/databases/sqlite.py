@@ -11,14 +11,14 @@ import requests
 from .._utils import logger
 from .._utils.constants import ERROR_DOWNLOADING_SQLITE_DB_CONSTANT, ERROR_CONNECTING_TO_DB_CONSTANT, \
     INVALID_DB_CONNECTION_OBJECT, ERROR_WHILE_RUNNING_QUERY, SQLLITE_GET_DB_QUERY, SQLLIE_TABLE_INFO_SCHEMA_CONSTANT, \
-    SQLLITE_TRAINING_DATASET_QUERY_CONSTANT
-from ..core import MindSQLCore
+    SQLLITE_TRAINING_DATASET_QUERY_CONSTANT, CONNECTION_ESTABLISH_ERROR_CONSTANT
+from . import IDatabase
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 log = logger.init_loggers("Sqlite")
 
 
-class Sqlite(MindSQLCore):
+class Sqlite(IDatabase):
     @staticmethod
     def __download_database(url: str, destination_path: str) -> None:
         """
@@ -65,8 +65,7 @@ class Sqlite(MindSQLCore):
             log.info(ERROR_CONNECTING_TO_DB_CONSTANT.format("SQLite", e))
             return None
 
-    @staticmethod
-    def validate_sqlite_connection(connection):
+    def validate_connection(self, connection):
         """
         A function that validates if the provided connection is a SQLite connection.
 
@@ -76,6 +75,9 @@ class Sqlite(MindSQLCore):
         Returns:
             None
         """
+        if connection is None:
+            raise ValueError(CONNECTION_ESTABLISH_ERROR_CONSTANT)
+        
         if not isinstance(connection, sqlite3.Connection):
             raise ValueError(INVALID_DB_CONNECTION_OBJECT.format("SQLite"))
 
@@ -90,8 +92,7 @@ class Sqlite(MindSQLCore):
         Returns:
             pd.DataFrame: A DataFrame containing the query results
         """
-        self._validate_connection(connection)
-        self.validate_sqlite_connection(connection)
+        self.validate_connection(connection)
         try:
             result = pd.read_sql_query(sql, connection)
             return result
@@ -99,7 +100,7 @@ class Sqlite(MindSQLCore):
             log.info(ERROR_WHILE_RUNNING_QUERY.format(e))
             return pd.DataFrame()
 
-    def _get_databases(self, connection) -> List[str]:
+    def get_databases(self, connection) -> List[str]:
         """
         Get a list of databases from the given connection and SQL query.
 
@@ -109,8 +110,7 @@ class Sqlite(MindSQLCore):
         Returns:
             List[str]: A list of unique database names
         """
-        self._validate_connection(connection)
-        self.validate_sqlite_connection(connection)
+        self.validate_connection(connection)
         try:
             df_databases = pd.read_sql_query(SQLLITE_GET_DB_QUERY, connection)
             return df_databases["name"].tolist()
@@ -118,7 +118,7 @@ class Sqlite(MindSQLCore):
             log.info(e)
             return []
 
-    def _get_table_names(self, connection, database: str) -> pd.DataFrame:
+    def get_table_names(self, connection, database: str) -> pd.DataFrame:
         """
         A method to get the list of tables in the database.
 
@@ -129,8 +129,7 @@ class Sqlite(MindSQLCore):
         Returns:
             pd.DataFrame: The list of tables
         """
-        self._validate_connection(connection)
-        self.validate_sqlite_connection(connection)
+        self.validate_connection(connection)
         try:
             result = pd.read_sql_query(SQLLIE_TABLE_INFO_SCHEMA_CONSTANT, connection)
             return result
@@ -149,10 +148,9 @@ class Sqlite(MindSQLCore):
         Returns:
             pd.DataFrame: The list of DDLs
         """
-        self._validate_connection(connection)
-        self.validate_sqlite_connection(connection)
+        self.validate_connection(connection)
 
-        df_tables = self._get_table_names(connection, database)
+        df_tables = self.get_table_names(connection, database)
         df_ddl = pd.DataFrame(columns=['Table', 'DDL'])
 
         for _, row in df_tables.iterrows():
@@ -172,8 +170,7 @@ class Sqlite(MindSQLCore):
         Returns:
             str: The DDL for the table
         """
-        self._validate_connection(connection)
-        self.validate_sqlite_connection(connection)
+        self.validate_connection(connection)
         ddl_df = pd.read_sql_query(SQLLITE_TRAINING_DATASET_QUERY_CONSTANT.format(table_name), connection)
         return ddl_df["sql"].iloc[0]
 

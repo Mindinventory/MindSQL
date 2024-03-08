@@ -1,10 +1,10 @@
 import google.generativeai as genai
 
 from .._utils.constants import GOOGLE_GEN_AI_VALUE_ERROR, GOOGLE_GEN_AI_APIKEY_ERROR
-from ..core import MindSQLCore
+from . import ILlm
 
 
-class GoogleGenAi(MindSQLCore):
+class GoogleGenAi(ILlm):
     def __init__(self, config=None):
         """
         Initialize the class with an optional config parameter.
@@ -15,7 +15,6 @@ class GoogleGenAi(MindSQLCore):
         Returns:
             None
         """
-        super().__init__(config)
         if config is None:
             raise ValueError(GOOGLE_GEN_AI_VALUE_ERROR)
 

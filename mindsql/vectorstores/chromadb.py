@@ -8,14 +8,13 @@ import pandas as pd
 from chromadb.config import Settings
 from chromadb.utils import embedding_functions
 
-from ..core import MindSQLCore
+from . import IVectorstore
 
 sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="WhereIsAI/UAE-Large-V1")
 
 
-class ChromaDB(MindSQLCore):
+class ChromaDB(IVectorstore):
     def __init__(self, config=None):
-        super().__init__(config)
         if config is not None:
             directory = config.get("path", ".")
             self.embedding_function = config.get("embedding_function", sentence_transformer_ef)

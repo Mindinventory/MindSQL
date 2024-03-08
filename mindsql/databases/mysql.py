@@ -7,13 +7,13 @@ import pandas as pd
 from .._utils import logger
 from .._utils.constants import SUCCESSFULLY_CONNECTED_TO_DB_CONSTANT, ERROR_CONNECTING_TO_DB_CONSTANT, \
     INVALID_DB_CONNECTION_OBJECT, ERROR_WHILE_RUNNING_QUERY, MYSQL_DB_TABLES_INFO_SCHEMA_QUERY, \
-    MYSQL_SHOW_DATABASE_QUERY, MYSQL_SHOW_CREATE_TABLE_QUERY
-from ..core import MindSQLCore
+    MYSQL_SHOW_DATABASE_QUERY, MYSQL_SHOW_CREATE_TABLE_QUERY, CONNECTION_ESTABLISH_ERROR_CONSTANT
+from . import IDatabase
 
 log = logger.init_loggers("MySQL")
 
 
-class MySql(MindSQLCore):
+class MySql(IDatabase):
     def create_connection(self, url: str, **kwargs) -> any:
         """
         A method to create a connection with the database.
@@ -38,8 +38,7 @@ class MySql(MindSQLCore):
         except mysql.connector.Error as e:
             log.info(ERROR_CONNECTING_TO_DB_CONSTANT.format("MySQL", e))
 
-    @staticmethod
-    def validate_mysql_connection(connection: any) -> None:
+    def validate_connection(self, connection: any) -> None:
         """
         A function that validates if the provided connection is a MySQL connection.
 
@@ -52,6 +51,9 @@ class MySql(MindSQLCore):
         Returns:
             None
         """
+        if connection is None:
+            raise ValueError(CONNECTION_ESTABLISH_ERROR_CONSTANT)
+
         if not isinstance(connection, mysql.connector.connection_cext.CMySQLConnection):
             raise ValueError(INVALID_DB_CONNECTION_OBJECT.format("MySQL"))
 
@@ -67,8 +69,7 @@ class MySql(MindSQLCore):
             pd.DataFrame: The result of the SQL query.
         """
         try:
-            self._validate_connection(connection)
-            self.validate_mysql_connection(connection)
+            self.validate_connection(connection)
             cursor = connection.cursor()
             cursor.execute(sql)
             results = cursor.fetchall()
@@ -79,7 +80,7 @@ class MySql(MindSQLCore):
         except mysql.connector.Error as e:
             log.info(ERROR_WHILE_RUNNING_QUERY.format(e))
 
-    def _get_databases(self, connection) -> List[str]:
+    def get_databases(self, connection) -> List[str]:
         """
         Get a list of databases from the given connection and SQL query.
 
@@ -90,8 +91,7 @@ class MySql(MindSQLCore):
             List[str]: A list of unique database names.
         """
         try:
-            self._validate_connection(connection)
-            self.validate_mysql_connection(connection)
+            self.validate_connection(connection)
             df_databases = self.execute_sql(connection=connection, sql=MYSQL_SHOW_DATABASE_QUERY)
         except Exception as e:
             log.info(e)
@@ -99,7 +99,7 @@ class MySql(MindSQLCore):
 
         return df_databases["DATABASE_NAME"].unique().tolist()
 
-    def _get_table_names(self, connection, database: str) -> pd.DataFrame:
+    def get_table_names(self, connection, database: str) -> pd.DataFrame:
         """
         Retrieves the tables from the information schema for the specified database.
 
@@ -110,8 +110,7 @@ class MySql(MindSQLCore):
         Returns:
             DataFrame: A pandas DataFrame containing the table names from the information schema.
         """
-        self._validate_connection(connection)
-        self.validate_mysql_connection(connection)
+        self.validate_connection(connection)
         df_tables = self.execute_sql(connection, MYSQL_DB_TABLES_INFO_SCHEMA_QUERY.format(database))
         return df_tables
 
@@ -126,9 +125,8 @@ class MySql(MindSQLCore):
         Returns:
             pd.DataFrame: A pandas DataFrame containing the DDLs for each table in the specified database.
         """
-        self._validate_connection(connection)
-        self.validate_mysql_connection(connection)
-        df_tables = self._get_table_names(connection, database)
+        self.validate_connection(connection)
+        df_tables = self.get_table_names(connection, database)
         df_ddl = pd.DataFrame(columns=['Table', 'DDL'])
         for index, row in df_tables.iterrows():
             table_name = row['TABLE_NAME']

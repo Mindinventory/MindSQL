@@ -1,10 +1,10 @@
 from openai import OpenAI
 
 from .._utils.constants import OPENAI_VALUE_ERROR, OPENAI_PROMPT_EMPTY_EXCEPTION
-from ..core import MindSQLCore
+from . import ILlm
 
 
-class OpenAi(MindSQLCore):
+class OpenAi(ILlm):
     def __init__(self, config=None, client=None):
         """
         Initialize the class with an optional config parameter.
@@ -16,7 +16,6 @@ class OpenAi(MindSQLCore):
         Returns:
             None
         """
-        super().__init__(config)
         self.client = client
 
         if client is not None:
