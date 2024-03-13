@@ -20,9 +20,9 @@ class GoogleGenAi(ILlm):
 
         if 'api_key' not in config:
             raise ValueError(GOOGLE_GEN_AI_APIKEY_ERROR)
-        api_key = config['api_key']
+        api_key = config.pop('api_key')
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-pro', **config)
 
     def system_message(self, message: str) -> any:
         """

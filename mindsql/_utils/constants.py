@@ -27,6 +27,7 @@ SQLLITE_TRAINING_DATASET_QUERY_CONSTANT = "SELECT sql FROM sqlite_master WHERE n
 GOOGLE_GEN_AI_VALUE_ERROR = "For GoogleGenAI, config must be provided with an api_key"
 GOOGLE_GEN_AI_APIKEY_ERROR = "config must contain a Google AI Studio api_key"
 LLAMA_VALUE_ERROR = "For LlamaAI, config must be provided with a model_path"
+CONFIG_REQUIRED_ERROR = "Configuration is required."
 LLAMA_PROMPT_EXCEPTION = "Prompt cannot be empty."
 OPENAI_VALUE_ERROR = "OpenAI API key is required"
 OPENAI_PROMPT_EMPTY_EXCEPTION = "Prompt cannot be empty."
