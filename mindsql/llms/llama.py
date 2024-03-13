@@ -1,6 +1,6 @@
 from llama_cpp import Llama
 
-from .._utils.constants import LLAMA_VALUE_ERROR, LLAMA_PROMPT_EXCEPTION
+from .._utils.constants import LLAMA_VALUE_ERROR, LLAMA_PROMPT_EXCEPTION, CONFIG_REQUIRED_ERROR
 from .illm import ILlm
 
 
@@ -16,13 +16,13 @@ class LlamaCpp(ILlm):
             None
         """
         if config is None:
-            raise ValueError("")
+            raise ValueError(CONFIG_REQUIRED_ERROR)
 
         if 'model_path' not in config:
             raise ValueError(LLAMA_VALUE_ERROR)
-        path = config['model_path']
+        path = config.pop('model_path')
 
-        self.model = Llama(model_path=path)
+        self.model = Llama(model_path=path, **config)
 
     def system_message(self, message: str) -> any:
         """

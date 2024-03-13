@@ -1,7 +1,7 @@
 from openai import OpenAI
 
-from .._utils.constants import OPENAI_VALUE_ERROR, OPENAI_PROMPT_EMPTY_EXCEPTION
 from . import ILlm
+from .._utils.constants import OPENAI_VALUE_ERROR, OPENAI_PROMPT_EMPTY_EXCEPTION
 
 
 class OpenAi(ILlm):
@@ -16,6 +16,7 @@ class OpenAi(ILlm):
         Returns:
             None
         """
+        self.config = config
         self.client = client
 
         if client is not None:
@@ -24,9 +25,8 @@ class OpenAi(ILlm):
 
         if 'api_key' not in config:
             raise ValueError(OPENAI_VALUE_ERROR)
-
-        if 'api_key' in config:
-            self.client = OpenAI(api_key=config['api_key'])
+        api_key = config.pop('api_key')
+        self.client = OpenAI(api_key=api_key, **config)
 
     def system_message(self, message: str) -> any:
         """
@@ -82,6 +82,6 @@ class OpenAi(ILlm):
         model = self.config.get("model", "gpt-3.5-turbo")
         temperature = kwargs.get("temperature", 0.1)
         max_tokens = kwargs.get("max_tokens", 500)
-        response = self.client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}], max_tokens=max_tokens, stop=None,
-                                                  temperature=temperature)
+        response = self.client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}],
+                                                       max_tokens=max_tokens, stop=None, temperature=temperature)
         return response.choices[0].message.content
