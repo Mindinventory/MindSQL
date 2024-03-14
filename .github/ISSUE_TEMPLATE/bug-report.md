@@ -42,6 +42,7 @@ assignees: ''
 ## Your Environment
 
 - Operating System:
+- Python Version:
 - LLM, Vectorstore or Database (with version):
 - Version of MindSQL (if known):
 - Any other relevant details:
