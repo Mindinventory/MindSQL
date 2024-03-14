@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaTokenizerFast
+from transformers import AutoModelForCausalLM, LlamaTokenizerFast
 
 from .illm import ILlm
 from .._utils.constants import LLAMA_VALUE_ERROR, LLAMA_PROMPT_EXCEPTION, CONFIG_REQUIRED_ERROR
@@ -23,7 +23,7 @@ class HuggingFace(ILlm):
             raise ValueError(LLAMA_VALUE_ERROR)
         model_name = config.pop('model_name') or 'gpt2'
 
-        self.tokenizer = LlamaTokenizerFast.from_pretrained("hf-internal-testing/llama-tokenizer")
+        self.tokenizer = LlamaTokenizerFast.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name, **config)
 
     def system_message(self, message: str) -> any:
