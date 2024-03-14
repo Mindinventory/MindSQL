@@ -79,12 +79,16 @@ Thank you for considering contributing to our project! Please follow these guide
 3. Test your changes thoroughly and add a test case in the `tests` folder.
 4. Submit a pull request with a clear description of the problem and solution.
 
+   [Learn more](CONTRIBUTING.md)
+
 ## 🐛 Bug Reports
 
 If you encounter a bug while using MindSQL, help us resolve it by following these steps:
 
 1. Check existing issues to see if the bug has been reported.
 2. If not, open a new issue with a detailed description, including steps to reproduce and relevant screenshots or error messages.
+   
+     [Learn more](.github/ISSUE_TEMPLATE/bug-report.md)
 
 ##  🚀 Feature Requests
 
@@ -93,6 +97,8 @@ We welcome suggestions for new features or improvements to MindSQL. Here's how y
 1. Check existing feature requests to avoid duplication.
 2. If your feature request is unique, open a new issue and describe the feature you would like to see.
 3. Provide as much context and detail as possible to help us understand your request.
+
+    [Learn more](.github/ISSUE_TEMPLATE/feature-request.md)
 
 ## 📣 Feedback
 
