@@ -1,10 +1,10 @@
-from openai import OpenAI
+from anthropic import Anthropic
 
 from . import ILlm
-from .._utils.constants import OPENAI_VALUE_ERROR, PROMPT_EMPTY_EXCEPTION
+from .._utils.constants import ANTHROPIC_VALUE_ERROR, PROMPT_EMPTY_EXCEPTION
 
 
-class OpenAi(ILlm):
+class AnthropicAi(ILlm):
     def __init__(self, config=None, client=None):
         """
         Initialize the class with an optional config parameter.
@@ -24,9 +24,9 @@ class OpenAi(ILlm):
             return
 
         if 'api_key' not in config:
-            raise ValueError(OPENAI_VALUE_ERROR)
+            raise ValueError(ANTHROPIC_VALUE_ERROR)
         api_key = config.pop('api_key')
-        self.client = OpenAI(api_key=api_key, **config)
+        self.client = Anthropic(api_key=api_key, **config)
 
     def system_message(self, message: str) -> any:
         """
@@ -72,16 +72,20 @@ class OpenAi(ILlm):
             prompt (str): The prompt parameter.
             **kwargs: Additional keyword arguments (optional).
                 - temperature (float): The temperature parameter for controlling randomness in generation.
-
+                - max_tokens (int): Maximum number of tokens to be generated.
         Returns:
             str: The generated response from the model.
         """
         if prompt is None or len(prompt) == 0:
             raise Exception(PROMPT_EMPTY_EXCEPTION)
 
-        model = self.config.get("model", "gpt-3.5-turbo")
+        model = self.config.get("model", "claude-3-opus-20240229")
         temperature = kwargs.get("temperature", 0.1)
-        max_tokens = kwargs.get("max_tokens", 500)
-        response = self.client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}],
-                                                       max_tokens=max_tokens, stop=None, temperature=temperature)
-        return response.choices[0].message.content
+        max_tokens = kwargs.get("max_tokens", 1024)
+        response = self.client.messages.create(model=model, messages=[{"role": "user", "content": prompt}],
+                                               max_tokens=max_tokens, temperature=temperature)
+        for content in response.content:
+            if isinstance(content, dict) and content.get("type") == "text":
+                return content["text"]
+            elif hasattr(content, "text"):
+                return content.text
