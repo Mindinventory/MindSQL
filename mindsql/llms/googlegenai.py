@@ -1,7 +1,7 @@
 import google.generativeai as genai
 
 from .._utils.constants import GOOGLE_GEN_AI_VALUE_ERROR, GOOGLE_GEN_AI_APIKEY_ERROR
-from . import ILlm
+from .illm import ILlm
 
 
 class GoogleGenAi(ILlm):
