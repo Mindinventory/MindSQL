@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from . import ILlm
+from .illm import ILlm
 from .._utils.constants import OPENAI_VALUE_ERROR, PROMPT_EMPTY_EXCEPTION
 
 

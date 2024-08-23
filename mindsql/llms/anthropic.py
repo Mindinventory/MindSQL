@@ -1,6 +1,6 @@
 from anthropic import Anthropic
 
-from . import ILlm
+from .illm import ILlm
 from .._utils.constants import ANTHROPIC_VALUE_ERROR, PROMPT_EMPTY_EXCEPTION
 
 
