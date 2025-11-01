@@ -176,6 +176,15 @@ class MindSQLCore:
         Returns:
             list[str]: The list of DDL statements.
         """
+        vector_ddls = []
+        try:
+            vector_ddls = self.vectorstore.retrieve_relevant_ddl(question, **kwargs)
+        except Exception as e:
+            log.info(f"Vector store retrieval failed: {e}")
+        
+        if vector_ddls and len(vector_ddls) > 0:
+            return vector_ddls
+        
         if tables and connection:
             ddl_statements = []
             for table_name in tables:

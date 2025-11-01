@@ -62,6 +62,12 @@ def extract_sql(llm_response: str) -> str:
         log.info(LOG_AND_RETURN_CONSTANT.format(llm_response, extracted_sql))
         return extracted_sql
 
+    if "SQLQuery:" in llm_response:
+        sql_part = llm_response.split("SQLQuery:", 1)[1].strip()
+        if "\n\n" in sql_part:
+            sql_part = sql_part.split("\n\n")[0].strip()
+        return log_and_return(sql_part)
+    
     sql_match = re.search(r"```(sql)?\n(.+?)```", llm_response, re.DOTALL)
     if sql_match:
         return log_and_return(sql_match.group(2).replace("`", ""))
