@@ -26,6 +26,8 @@ class OpenAi(ILlm):
         if 'api_key' not in config:
             raise ValueError(OPENAI_VALUE_ERROR)
         api_key = config.pop('api_key')
+        if 'model' in config:
+            self.model = config.pop('model')
         self.client = OpenAI(api_key=api_key, **config)
 
     def system_message(self, message: str) -> any:
@@ -79,7 +81,7 @@ class OpenAi(ILlm):
         if prompt is None or len(prompt) == 0:
             raise Exception(PROMPT_EMPTY_EXCEPTION)
 
-        model = self.config.get("model", "gpt-3.5-turbo")
+        model = self.model if self.model else "gpt-5-2025-08-07"
         temperature = kwargs.get("temperature", 0.1)
         max_tokens = kwargs.get("max_tokens", 500)
         response = self.client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}],
